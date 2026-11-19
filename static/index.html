@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a3a5c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>UniFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #eef2f0;
+      --panel: #fbfcfb;
+      --ink: #14201c;
+      --muted: #5a6b64;
+      --line: #d5ddd8;
+      --accent: #0f6b57;
+      --accent-2: #1a3a5c;
+      --danger: #9b2c2c;
+      --ok: #176b45;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 420px at 10% -10%, #c8e4da 0%, transparent 55%),
+        radial-gradient(700px 380px at 100% 0%, #d5e0ec 0%, transparent 50%),
+        var(--bg);
+      min-height: 100dvh;
+      padding-bottom: calc(4.2rem + var(--safe-bottom));
+    }
+    header {
+      padding: 1.1rem 1.1rem 0.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 4vw, 1.8rem);
+      letter-spacing: -0.02em;
+      color: var(--accent-2);
+    }
+    header p { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.92rem; }
+    .access {
+      margin-top: 0.55rem;
+      font-size: 0.82rem;
+      color: var(--accent-2);
+      word-break: break-all;
+    }
+    nav.tabs {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.25rem;
+      padding: 0.45rem 0.55rem calc(0.45rem + var(--safe-bottom));
+      background: rgba(251, 252, 251, 0.96);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+    nav.tabs button {
+      margin: 0;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      padding: 0.55rem 0.2rem;
+      border-radius: 10px;
+      min-height: 44px;
+    }
+    nav.tabs button.active {
+      background: #e5efe9;
+      color: var(--accent);
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.7rem 1.1rem 1rem;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .panel { display: none; }
+    .panel.active { display: contents; }
+    @media (min-width: 900px) {
+      body { padding-bottom: 1.5rem; }
+      nav.tabs { display: none; }
+      .panel { display: contents; }
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem 1.05rem 1.15rem;
+    }
+    section.wide { grid-column: 1 / -1; }
+    @media (max-width: 899px) {
+      main { grid-template-columns: 1fr; }
+      section.wide { grid-column: auto; }
+    }
+    h2 {
+      margin: 0 0 0.85rem;
+      font-size: 1.05rem;
+      color: var(--accent-2);
+    }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0.45rem 0 0.25rem;
+    }
+    input, select, textarea, button { font: inherit; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 9px;
+      padding: 0.7rem 0.75rem;
+      color: var(--ink);
+      font-size: 16px;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+    .actions button, section > button {
+      margin-top: 0.75rem;
+      border: 0;
+      border-radius: 9px;
+      padding: 0.78rem 0.95rem;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      min-height: 46px;
+    }
+    button:disabled { opacity: 0.55; cursor: wait; }
+    .list {
+      margin-top: 0.8rem;
+      border-top: 1px solid var(--line);
+      padding-top: 0.7rem;
+      max-height: 220px;
+      overflow: auto;
+      font-size: 0.92rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .item {
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed var(--line);
+    }
+    .item:last-child { border-bottom: 0; }
+    .muted { color: var(--muted); font-size: 0.85rem; }
+    .msg {
+      margin-top: 0.7rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 9px;
+      background: #e8f3ee;
+      color: var(--ok);
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+    }
+    .msg.err { background: #f8e8e8; color: var(--danger); }
+    .answer {
+      margin-top: 0.8rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .sources { margin-top: 0.7rem; font-size: 0.85rem; color: var(--muted); }
+    .chip {
+      display: inline-block;
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      background: #e5efe9;
+      color: var(--accent);
+      margin-left: 0.25rem;
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>UniFlow</h1>
+    <p>يعمل على الويب والموبايل — نفس الشبكة المحلية.</p>
+    <div class="access" id="accessInfo">جاري تحميل روابط الوصول...</div>
+  </header>
+
+  <nav class="tabs" aria-label="التنقل">
+    <button type="button" class="active" data-tab="chat" onclick="showTab('chat')">شات</button>
+    <button type="button" data-tab="ingest" onclick="showTab('ingest')">رفع</button>
+    <button type="button" data-tab="students" onclick="showTab('students')">طلاب</button>
+    <button type="button" data-tab="courses" onclick="showTab('courses')">مواد</button>
+  </nav>
+
+  <main>
+    <div class="panel active" data-panel="chat">
+      <section class="wide">
+        <h2>الشات</h2>
+        <div class="row">
+          <div>
+            <label>student_id</label>
+            <input id="chatStudent" placeholder="s1" value="s1" autocomplete="username" />
+          </div>
+          <div>
+            <label>course_id (اختياري)</label>
+            <input id="chatCourse" placeholder="CS101" />
+          </div>
+        </div>
+        <label>السؤال</label>
+        <textarea id="chatQ" placeholder="اشرحلي وصف النظام في المشروع"></textarea>
+        <button id="chatBtn" onclick="chat()">اسأل</button>
+        <div class="answer" id="chatAnswer"></div>
+        <div class="sources" id="chatSources"></div>
+        <div id="chatMsg"></div>
+      </section>
+      <section class="wide">
+        <h2>حالة النظام</h2>
+        <div id="health" class="muted">...</div>
+      </section>
+    </div>
+
+    <div class="panel" data-panel="ingest">
+      <section class="wide">
+        <h2>رفع محاضرة</h2>
+        <div class="row">
+          <div>
+            <label>course_id</label>
+            <input id="ingestCourse" placeholder="CS101" />
+          </div>
+          <div>
+            <label>lecture_id</label>
+            <input id="ingestLecture" placeholder="L1" />
+          </div>
+        </div>
+        <label>الملف</label>
+        <input id="ingestFile" type="file" accept=".pdf,.docx,.pptx,.txt,.md" />
+        <button id="ingestBtn" onclick="ingest()">رفع وفهرسة</button>
+        <div id="ingestMsg"></div>
+      </section>
+    </div>
+
+    <div class="panel" data-panel="students">
+      <section class="wide">
+        <h2>طالب + تسجيل مواد</h2>
+        <div class="row">
+          <div>
+            <label>رقم الطالب</label>
+            <input id="studentId" placeholder="s1" />
+          </div>
+          <div>
+            <label>الاسم</label>
+            <input id="studentName" placeholder="أحمد" />
+          </div>
+        </div>
+        <label>المواد (مفصولة بفاصلة)</label>
+        <input id="studentCourses" placeholder="CS101, MATH201" />
+        <button onclick="saveStudent()">حفظ الطالب</button>
+        <div class="list" id="studentsList"></div>
+        <div id="studentMsg"></div>
+      </section>
+    </div>
+
+    <div class="panel" data-panel="courses">
+      <section class="wide">
+        <h2>مادة جديدة</h2>
+        <label>رمز المادة</label>
+        <input id="courseId" placeholder="CS101" />
+        <label>اسم المادة</label>
+        <input id="courseTitle" placeholder="Distributed Systems" />
+        <button onclick="saveCourse()">حفظ المادة</button>
+        <div class="list" id="coursesList"></div>
+        <div id="courseMsg"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function showTab(name) {
+      document.querySelectorAll(".panel").forEach((p) => {
+        p.classList.toggle("active", p.dataset.panel === name);
+      });
+      document.querySelectorAll("nav.tabs button").forEach((b) => {
+        b.classList.toggle("active", b.dataset.tab === name);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function show(id, text, err = false) {
+      const el = $(id);
+      el.className = "msg" + (err ? " err" : "");
+      el.textContent = text;
+    }
+
+    async function api(url, opts = {}) {
+      const res = await fetch(url, opts);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const detail = data.detail;
+        const msg = typeof detail === "string" ? detail : JSON.stringify(detail || data);
+        throw new Error(msg || res.statusText);
+      }
+      return data;
+    }
+
+    async function refresh() {
+      const [students, courses, health] = await Promise.all([
+        api("/students"),
+        api("/courses"),
+        api("/health"),
+      ]);
+      $("studentsList").innerHTML = students.length
+        ? students.map((s) => `<div class="item"><div><strong>${s.student_id}</strong> — ${s.name}<div class="muted">${(s.courses || []).join(", ") || "بدون مواد"}</div></div></div>`).join("")
+        : '<div class="muted">لا يوجد طلاب</div>';
+      $("coursesList").innerHTML = courses.length
+        ? courses.map((c) => `<div class="item"><div><strong>${c.course_id}</strong> <span class="muted">${c.title}</span></div></div>`).join("")
+        : '<div class="muted">لا توجد مواد</div>';
+      $("health").textContent = `chunks=${health.chunks} | students=${health.students} | courses=${health.courses}`;
+      const here = window.location.origin + "/";
+      const mobiles = (health.mobile_urls || []).join("  |  ") || "نفس جهاز الكمبيوتر فقط";
+      $("accessInfo").textContent = `هذا الجهاز: ${here}\nموبايل (نفس الواي فاي): ${mobiles}`;
+    }
+
+    async function saveCourse() {
+      try {
+        const id = $("courseId").value.trim();
+        const title = $("courseTitle").value.trim();
+        await api(`/courses/${encodeURIComponent(id)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title }),
+        });
+        show("courseMsg", "تم حفظ المادة");
+        refresh();
+      } catch (e) {
+        show("courseMsg", e.message, true);
+      }
+    }
+
+    async function saveStudent() {
+      try {
+        const id = $("studentId").value.trim();
+        const name = $("studentName").value.trim();
+        const courses = $("studentCourses").value.split(",").map((s) => s.trim()).filter(Boolean);
+        await api(`/students/${encodeURIComponent(id)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, courses }),
+        });
+        show("studentMsg", "تم حفظ الطالب");
+        refresh();
+      } catch (e) {
+        show("studentMsg", e.message, true);
+      }
+    }
+
+    async function ingest() {
+      const btn = $("ingestBtn");
+      try {
+        btn.disabled = true;
+        const fd = new FormData();
+        fd.append("course_id", $("ingestCourse").value.trim());
+        fd.append("lecture_id", $("ingestLecture").value.trim());
+        const file = $("ingestFile").files[0];
+        if (!file) throw new Error("اختر ملف");
+        fd.append("file", file);
+        const data = await api("/ingest", { method: "POST", body: fd });
+        show("ingestMsg", `تم الفهرسة: ${data.pages_indexed} صفحة\nمعاينة: ${data.preview || ""}`);
+        refresh();
+      } catch (e) {
+        show("ingestMsg", e.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function chat() {
+      const btn = $("chatBtn");
+      try {
+        btn.disabled = true;
+        $("chatAnswer").textContent = "جارٍ التفكير...";
+        $("chatSources").textContent = "";
+        const body = {
+          student_id: $("chatStudent").value.trim(),
+          session_id: "mobile-web",
+          question: $("chatQ").value.trim(),
+        };
+        const course = $("chatCourse").value.trim();
+        if (course) body.course_id = course;
+        const data = await api("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        $("chatAnswer").textContent = data.answer;
+        $("chatSources").innerHTML = (data.sources || []).map((s) =>
+          `<div><span class="chip">${s.course_id}/${s.lecture_id}</span> ${s.file_name || ""} p.${s.page || "?"} score=${s.score ?? "-"}<br/>${s.snippet || ""}</div>`
+        ).join("") || "لا مصادر";
+        show("chatMsg", `المواد المسموحة: ${(data.allowed_courses || []).join(", ")}`);
+      } catch (e) {
+        $("chatAnswer").textContent = "";
+        show("chatMsg", e.message, true);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    refresh().catch((e) => {
+      $("health").textContent = e.message;
+      $("accessInfo").textContent = e.message;
+    });
+  </script>
+</body>
+</html>
